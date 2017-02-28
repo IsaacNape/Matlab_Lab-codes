@@ -1,0 +1,36 @@
+%This code takes the image of a gaussian beam from a point grey camera,
+%assuming it is already in gray scale. The second part is used to take the
+%center possition of the beam and uses the central pixels. The calculation
+%is done with the the CalculateBeamWaiste procedure.
+
+clear all; close all;
+
+% load camera and take image (set parameters)
+vid = videoinput('pointgrey', 1, 'F7_Mono8_1624x1224_Mode0');
+src = getselectedsource(vid);
+src.Gain = -6;
+src.Exposure=-5;
+vid.FramesPerTrigger = 1;
+
+% take image
+preview(vid);
+start(vid);
+stoppreview(vid);
+im=getdata(vid);
+
+%write image to file
+imwrite(im,'C:\Users\Isaac\Dropbox\Experimental data\QKD in step index fiber\beam.png');
+imagesc((im)); axis off;
+
+%%
+%set center and background value
+u=double(imread('gaussnow.png'));
+yCenter=957;xCenter=574;
+back=7;
+plot(u(:, yCenter));
+
+%%
+[xPixLim, yPixLimit]=size(u) ;
+x=linspace(1,xPixLim,6000);
+[q,w,e]=CalculateBeamWaste(u,xCenter, yCenter, back, 0.02);
+plot(w); hold on; plot(x,e,'r');
